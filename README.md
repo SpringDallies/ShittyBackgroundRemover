@@ -1,6 +1,6 @@
 # shitty background remover (sbr)
 
-A small offline desktop app that rips backgrounds off your images on your CPU, images are stored locally. 
+A small offline desktop app that rips backgrounds off your images on your cpu, images are stored locally. 
 
 ## features
 
@@ -9,13 +9,13 @@ A small offline desktop app that rips backgrounds off your images on your CPU, i
 - Adjustments apply almost instantly
 - Export as PNG or WebP straight to your `Downloads` folder, because that's where files go to die (i wont add an option to change export location anytime soon, good luck)
 
-## Download (no Python needed)
+## install
 
-Go to the [Releases](../../releases) page, download `BackgroundRemover-windows.zip`, extract it, and run `BackgroundRemover.exe`. 
+go to the [Releases](../../releases) page, download `BackgroundRemover-windows.zip`, extract it, and run `BackgroundRemover.exe`. 
 
-## Run from source (Windows, PowerShell)
+## run from source (windows powershell)
 
-Needs Python 3.10 or newer. Don't argue.
+needs python 3.10 or newer. don't ask why.
 
 ```powershell
 git clone https://github.com/SpringDallies/ShittyBackgroundRemover.git
@@ -26,9 +26,9 @@ pip install -r requirements.txt
 python app.py
 ```
 
-If PowerShell blocks the activate script, try `Set-ExecutionPolicy -Scope Process Bypass`
+if powershell blocks the activate script, try `Set-ExecutionPolicy -Scope Process Bypass`
 
-## Build the .exe yourself
+## Build the exe yourself
 
 ```powershell
 pip install -r requirements-build.txt
@@ -37,11 +37,11 @@ pip install -r requirements-build.txt
 
 the exe is saved in: `dist\BackgroundRemover\BackgroundRemover.exe`.
 
-## First run
+## first stage
 
 each one downloads the first time you pick it and gets cached in `%USERPROFILE%\.cache\fast_rmbg`, so the first conversion with a model needs internet and takes longer. The small `u2netp` model is a good one to start with. After that, models you've already used work offline. 
 
-## Notes
+## notes
 
 - Built and tested on Windows. the app window uses the microsoft webview2 runtime, which is already on current Windows 10/11. if it's missing, the app falls back to opening in your default browser.
 - Exports are saved to `%USERPROFILE%\Downloads`.
