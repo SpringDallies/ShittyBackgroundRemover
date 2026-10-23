@@ -2,6 +2,9 @@
 
 A small offline desktop app that rips backgrounds off your images on your cpu, images are stored locally. 
 
+<img width="969" height="626" alt="image" src="https://github.com/user-attachments/assets/8c9a63d1-caac-4fe4-a64d-3d287ba84601" />
+
+
 ## features
 
 - Import with a button, or drag and drop
