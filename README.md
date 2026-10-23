@@ -7,7 +7,7 @@ A small offline desktop app that rips backgrounds off your images on your cpu, i
 - Import with a button, or drag and drop
 - Added 10 models currently ranging from general/people to anime/artwork
 - Adjustments apply almost instantly
-- Export as PNG or WebP straight to your `Downloads` folder, because that's where files go to die (i wont add an option to change export location anytime soon, good luck)
+- Export as png or webp (better png icl) straight to your `Downloads` folder, because that's where files go to die (i wont add an option to change export location anytime soon, good luck)
 
 ## install
 
