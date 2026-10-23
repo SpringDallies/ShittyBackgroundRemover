@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>background remover</title>
+
+    <link rel="preload" href="{{ url_for('static', filename='JetBrainsMono.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+
+    <style>
+        @font-face {
+            font-family: "JetBrains Mono";
+            src: url("{{ url_for('static', filename='JetBrainsMono.woff2') }}") format("woff2");
+            font-weight: 400 700;
+            font-style: normal;
+            font-display: block;
+        }
+
+        body {
+            font-family: "JetBrains Mono", Consolas, monospace;
+        }
+
+        #status {
+            position: absolute;
+            top: 14px;
+            bottom: auto !important;
+            left: 12px;
+            right: 125px;
+            padding: 4px 0;
+            color: var(--light-accent);
+            font-size: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        #bg-toggle-button {
+            position: absolute;
+            top: 14px;
+            right: 12px;
+            padding: 4px 0;
+            border: none;
+            background: transparent;
+            color: var(--light-accent);
+            font: inherit;
+            font-size: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        #bg-toggle-button:hover {
+            color: white;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        #processing-text {
+            margin-top: 0 !important;
+            margin-bottom: 10px;
+            min-height: 18px;
+        }
+
+        #processing-text.hidden {
+            display: flex !important;
+            visibility: hidden;
+        }
+
+        #controls-panel {
+            width: 100%;
+            padding: 14px 12px 0 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 11px;
+            color: var(--text);
+        }
+
+        .ctrl-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ctrl-label {
+            color: var(--light-accent);
+            white-space: nowrap;
+        }
+
+        .ctrl-label b {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* Centered dropdown text and centered options */
+        #model-select {
+            width: 58%;
+            padding: 5px 6px;
+            background: var(--background);
+            color: var(--text);
+            border: 1px solid var(--accent);
+            border-radius: 0;
+            font: inherit;
+            outline: none;
+            cursor: pointer;
+            
+        }
+
+
+        #model-select:hover,
+        #model-select:focus {
+            border-color: var(--highlight);
+        }
+
+        input[type="range"].themed-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 58%;
+            height: 4px;
+            background: var(--background);
+            border: 1px solid var(--accent);
+            border-radius: 0;
+            outline: none;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        input[type="range"].themed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px;
+            height: 16px;
+            background: var(--light-accent);
+            border: 1px solid var(--highlight);
+            border-radius: 0;
+            cursor: pointer;
+        }
+
+        input[type="range"].themed-slider:hover::-webkit-slider-thumb {
+            background: var(--highlight);
+        }
+
+        input[type="range"].themed-slider:active::-webkit-slider-thumb {
+            background: rgb(103, 73, 255);
+            border-color: white;
+        }
+
+        #reset-Row {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 2px;
+        }
+
+        #reset-settings-button {
+            font-size: 10px;
+            color: var(--light-accent);
+        }
+
+        #reset-settings-button:hover {
+            color: white;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        #sumthing {
+            top: auto !important;
+            bottom: 24px;
+            white-space: nowrap;
+        }
+
+        .format-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        #preview-stage {
+            user-select: none;
+        }
+
+        #preview-stage.bg-dark {
+            background-color: var(--background);
+            background-image: none;
+        }
+
+        #preview-stage.bg-dark-checkered {
+            background-color: #1f1f1f;
+            background-image:
+                linear-gradient(45deg, #2e2e2e 25%, transparent 25%),
+                linear-gradient(-45deg, #2e2e2e 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #2e2e2e 75%),
+                linear-gradient(-45deg, transparent 75%, #2e2e2e 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        }
+
+        #preview-stage.bg-white-checkered {
+            background-color: #ffffff;
+            background-image:
+                linear-gradient(45deg, #dcdcdc 25%, transparent 25%),
+                linear-gradient(-45deg, #dcdcdc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #dcdcdc 75%),
+                linear-gradient(-45deg, transparent 75%, #dcdcdc 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        }
+
+        #preview-stage.bg-white {
+            background-color: #ffffff;
+            background-image: none;
+        }
+
+        #zoom-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 100%;
+            max-height: 100%;
+            transform-origin: center center;
+        }
+
+        #preview-image,
+        #compare-original {
+            display: block;
+            max-width: 100%;
+            max-height: calc(100vh - 24px);
+            object-fit: contain;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        #compare-original {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: inset(0 50% 0 0);
+        }
+
+        #compare-divider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 1px;
+            background: var(--highlight);
+            transform: translateX(-50%);
+            cursor: ew-resize;
+            z-index: 5;
+        }
+
+        #compare-divider::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -8px;
+            right: -8px;
+        }
+
+        #compare-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 24px;
+            background: var(--dark-accent);
+            border: 1px solid var(--highlight);
+            border-radius: 0;
+            color: var(--text);
+            font-size: 10px;
+            line-height: 22px;
+            text-align: center;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <main id="container">
+        <section id="left">
+            <div id="left-bar">
+                <div id="status">ready</div>
+                <button id="bg-toggle-button" type="button">[bg: dark]</button>
+
+                <div id="processing-text" class="hidden" aria-live="polite">
+                    <span id="processing-word"></span>
+                    <span id="processing-eta">est. ~1–2s</span>
+                </div>
+
+                <div id="wrapper">
+                    <button class="butt1" id="insert-button" type="button">
+                        import
+                    </button>
+
+                    <button class="butt1" id="export-button"
+                            type="button" disabled>
+                        convert
+                    </button>
+                </div>
+
+                <input id="image-input" type="file"
+                       accept="image/png,image/jpeg,image/webp" hidden>
+
+                <div id="controls-panel">
+                    <label class="ctrl-row">
+                        <span class="ctrl-label">model</span>
+                        <select id="model-select">
+                            <option value="u2netp">u2netp (fast general ~1s)</option>
+                            <option value="silueta">silueta (products/objects ~2s)</option>
+                            <option value="u2net">u2net (standard general ~3s)</option>
+                            <option value="u2net_human_seg">human_seg (portraits/people ~3s)</option>
+                            <option value="isnet_anime">isnet-anime (anime/art ~5s)</option>
+                            <option value="manga_bw">manga B&W (ink/lineart ~0.1s)</option>
+                            <option value="isnet_general">isnet-general (crisp edges ~5s)</option>
+                            <option value="birefnet_lite">BiRefNet-Lite (hair/fur ~7s)</option>
+                            <option value="rmbg14">RMBG-1.4 (FP32 ~5s)</option>
+                            <option value="rmbg20">RMBG-2.0 (FP16 heavy)</option>
+                        </select>
+                    </label>
+
+                    <label class="ctrl-row">
+                        <span class="ctrl-label">feather <b id="val-feather">1.0</b></span>
+                        <input id="param-feather" class="themed-slider" type="range" min="0" max="10" step="0.5" value="1.0">
+                    </label>
+
+                    <label class="ctrl-row">
+                        <span class="ctrl-label">thresh <b id="val-threshold">0.15</b></span>
+                        <input id="param-threshold" class="themed-slider" type="range" min="0" max="0.8" step="0.05" value="0.15">
+                    </label>
+
+                    <label class="ctrl-row">
+                        <span class="ctrl-label">contrast <b id="val-contrast">1.2</b></span>
+                        <input id="param-contrast" class="themed-slider" type="range" min="0.5" max="3.0" step="0.1" value="1.2">
+                    </label>
+
+                    <label class="ctrl-row">
+                        <span class="ctrl-label">shift <b id="val-shift">0</b></span>
+                        <input id="param-shift" class="themed-slider" type="range" min="-5" max="5" step="1" value="0">
+                    </label>
+
+                    <div id="reset-Row">
+                        <button class="format-button" id="reset-settings-button" type="button">[reset settings]</button>
+                    </div>
+                </div>
+
+                <div id="sumthing">
+                    <!-- Default view: [compare] and [export] -->
+                    <button class="format-button"
+                            id="compare-button"
+                            type="button" disabled>[compare]</button>
+
+                    <button class="format-button"
+                            id="save-downloads-button"
+                            type="button" disabled>[export]</button>
+
+                    <!-- Format selection view (initially hidden, replaces export/compare when clicked) -->
+                    <button class="format-button active hidden"
+                            type="button" data-format="png">[png]</button>
+
+                    <button class="format-button hidden"
+                            type="button" data-format="webp">[webp]</button>
+
+                    <button class="format-button hidden"
+                            id="cancel-export-button"
+                            type="button">[cancel]</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="right">
+            <div id="right-bar">
+                <div id="preview-stage" class="bg-dark">
+                    <div id="zoom-container">
+                        <img id="preview-image" class="hidden" alt="Preview">
+                        <img id="compare-original" class="hidden" alt="Original">
+                        <div id="compare-divider" class="hidden">
+                            <div id="compare-handle">|</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

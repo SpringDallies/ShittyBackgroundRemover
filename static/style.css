@@ -1,0 +1,310 @@
+:root {
+    --background: rgb(42, 42, 42);
+    --dark-accent: rgb(67, 67, 67);
+    --accent: rgb(97, 97, 97);
+    --light-accent: rgb(148, 148, 148);
+    --highlight: rgb(209, 209, 209);
+    --text: rgb(224, 224, 224);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background: var(--background);
+}
+
+body {
+    color: aliceblue;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+}
+
+::selection {
+    background: rgb(103, 73, 255);
+    color: white;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100vh;
+}
+
+#left {
+    width: 40%;
+    height: 100%;
+    flex-shrink: 0;
+}
+
+#right {
+    width: 60%;
+    height: 100%;
+    min-width: 0;
+}
+
+#left-bar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: var(--dark-accent);
+    border-right: 2px solid var(--accent);
+}
+
+#right-bar {
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+}
+
+#wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: auto;
+    padding: 0 12px;
+    margin-top: 20px;
+}
+
+.butt1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45%;
+    min-height: 42px;
+    padding: 8px;
+    border: 1px solid var(--accent);
+    border-radius: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.butt1:hover:not(:disabled) {
+    text-decoration: underline;
+    background: var(--accent);
+}
+
+.butt1:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.importexport {
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+#sumthing {
+    position: absolute;
+    top: 58%;
+    left: 50%;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    transform: translateX(-50%);
+}
+
+.format-button {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.format-button:hover {
+    color: white;
+}
+
+.format-button.active {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+#status {
+    position: absolute;
+    bottom: 14px;
+    left: 12px;
+    right: 12px;
+    color: var(--light-accent);
+    font-size: 10px;
+    overflow-wrap: anywhere;
+}
+
+#preview-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#preview-image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+#processing-indicator {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 8px;
+    background: var(--dark-accent);
+    color: var(--text);
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 600px) {
+    #left {
+        width: 42%;
+    }
+
+    #right {
+        width: 58%;
+    }
+
+    #wrapper {
+        flex-direction: column;
+        padding: 0 8px;
+    }
+
+    .butt1 {
+        width: 100%;
+    }
+}
+
+#processing-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--text);
+}
+
+#processing-word {
+    display: inline-flex;
+}
+
+#processing-word span {
+    display: inline-block;
+    animation: enshittify 1s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 65ms);
+}
+
+#processing-eta {
+    color: var(--light-accent);
+    font-size: 10px;
+}
+
+@keyframes enshittify {
+    0%, 100% {
+        opacity: 0.35;
+        transform: translateY(2px);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+}
+
+/* --- MINIMAL ADDITIONS FOR MISSING CONTROLS & SIDE-BY-SIDE COMPARE --- */
+#controls-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 90%;
+    margin-top: 12px;
+    font-size: 11px;
+}
+
+#model-select {
+    font: inherit;
+    color: var(--text);
+    background: var(--background);
+    border: 1px solid var(--accent);
+    border-radius: 0;
+    padding: 4px;
+    width: 100%;
+}
+
+.param-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.param-row input[type="range"] {
+    width: 55%;
+}
+
+#preview-stage.compare-mode {
+    gap: 8px;
+}
+
+.compare-pane {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+#preview-stage.compare-mode #original-pane {
+    border-right: 1px solid var(--accent);
+    padding-right: 4px;
+}
+
+#original-image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.pane-tag {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    font-size: 10px;
+    color: var(--light-accent);
+    background: var(--background);
+    border: 1px solid var(--accent);
+    padding: 2px 5px;
+    pointer-events: none;
+}

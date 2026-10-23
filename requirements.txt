@@ -1,0 +1,6 @@
+flask
+numpy
+onnxruntime
+pillow
+huggingface_hub
+pywebview
